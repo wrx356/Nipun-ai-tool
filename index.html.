@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nipun AI Tools — All-in-One AI Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row antialiased">
+
+  <!-- Sidebar -->
+  <aside class="w-full md:w-72 bg-slate-900/90 border-b md:border-b-0 md:border-r border-slate-800 p-5 flex flex-col justify-between shrink-0">
+    <div>
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center font-bold text-slate-950 text-lg shadow-lg shadow-indigo-500/20">
+          N
+        </div>
+        <div>
+          <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-300 bg-clip-text text-transparent">
+            Nipun AI Tools
+          </h1>
+          <p class="text-xs text-slate-400">All-in-One AI Workspace</p>
+        </div>
+      </div>
+
+      <nav class="space-y-2" aria-label="Main Navigation">
+        <button data-tab="chat" onclick="switchTab('chat')"
+          class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition bg-indigo-600 text-white shadow-md shadow-indigo-600/20">
+          <span>💬</span>
+          <span>Nipun AI Chat</span>
+        </button>
+
+        <button data-tab="image" onclick="switchTab('image')"
+          class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition text-slate-300 hover:bg-slate-800">
+          <span>🖼️</span>
+          <span>AI Image Studio</span>
+        </button>
+
+        <button data-tab="video" onclick="switchTab('video')"
+          class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition text-slate-300 hover:bg-slate-800">
+          <span>🎬</span>
+          <span>AI Video Studio</span>
+        </button>
+
+        <button data-tab="tools" onclick="switchTab('tools')"
+          class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition text-slate-300 hover:bg-slate-800">
+          <span>🧰</span>
+          <span>50 AI Tools Directory</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="mt-8 p-4 rounded-2xl bg-slate-800/60 border border-slate-700/70 space-y-2">
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">Gemini API Status</span>
+        <span id="api-status-badge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium">Demo / Ready</span>
+      </div>
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        සජීවී AI Chat සඳහා Chat Tab එකේ ඔයාගේ Gemini API Key එක ඇතුළත් කරන්න.
+      </p>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-5 md:p-8 overflow-y-auto">
+
+    <!-- 1. NIPUN AI CHAT -->
+    <section id="tab-chat" class="tab-panel max-w-4xl mx-auto flex flex-col h-[84vh]">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold">Nipun AI Chat</h2>
+          <p class="text-sm text-slate-400">සිංහලෙන් හෝ ඉංග්‍රීසියෙන් ප්‍රශ්න අහන්න, ලිපි සහ Code ලියාගන්න.</p>
+        </div>
+        <button onclick="clearChat()" class="self-start sm:self-auto text-xs px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+          Chat Clear
+        </button>
+      </div>
+
+      <!-- API Key Bar -->
+      <div class="mb-4 p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row gap-2 sm:items-center">
+        <label for="gemini-api-key" class="text-xs font-medium text-slate-300 shrink-0">Gemini API Key:</label>
+        <input id="gemini-api-key" type="password" placeholder="AIzaSy... (හිස්ව තැබුවහොත් Demo Mode ක්‍රියාත්මක වේ)"
+          class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500" />
+        <button onclick="saveApiKey()" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold transition">
+          Save Key
+        </button>
+      </div>
+
+      <!-- Messages Container -->
+      <div id="chat-messages" class="flex-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 md:p-5 overflow-y-auto space-y-4 mb-4">
+        <div class="flex justify-start">
+          <div class="max-w-[82%] bg-slate-800 text-slate-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed">
+            ආයුබෝවන්! මම <strong>Nipun AI Assistant</strong>. ඔයාට අද මොනවද දැනගන්න, ලියාගන්න හෝ හදාගන්න ඕනේ?
+          </div>
+        </div>
+      </div>
+
+      <div id="chat-typing" class="hidden text-xs text-indigo-400 mb-2 px-1">
+        Nipun AI පිළිතුරු සකසමින් පවතී...
+      </div>
+
+      <!-- Input Box -->
+      <div class="flex gap-2.5">
+        <input id="chat-input" type="text" placeholder="මෙතැන Type කරන්න... (Enter ඔබන්න)"
+          onkeydown="if(event.key === 'Enter') sendMessage()"
+          class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500" />
+        <button onclick="sendMessage()"
+          class="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl font-semibold text-sm transition shadow-md shadow-indigo-600/20">
+          Send
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. AI IMAGE STUDIO -->
+    <section id="tab-image" class="tab-panel hidden max-w-4xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold mb-1">AI Image Studio</h2>
+      <p className="text-sm text-slate-400 mb-6">ඔයාට අවශ්‍ය පින්තූරය ඉංග්‍රීසියෙන් හෝ සිංහලෙන් විස්තර කර Generate කරන්න.</p>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-6 space-y-4">
+        <div class="flex flex-col md:flex-row gap-3">
+          <input id="img-prompt" type="text"
+            placeholder="උදා: Futuristic neon city in Sri Lanka at night, ultra detailed, 8k..."
+            class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500" />
+          <select id="img-size" class="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <option value="1024x1024">Square (1:1)</option>
+            <option value="1280x720">Landscape (16:9)</option>
+            <option value="720x1280">Portrait (9:16)</option>
+          </select>
+          <button onclick="generateImage()"
+            class="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl font-semibold text-sm transition shrink-0">
+            ✨ Generate
+          </button>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs">
+          <span class="text-slate-400 py-1">Quick Prompts:</span>
+          <button onclick="setPrompt('Minimalist modern workspace desk with glowing monitor, dark aesthetic, 4k')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Modern Desk</button>
+          <button onclick="setPrompt('Magical glowing forest waterfall at night, fantasy digital art, high detail')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Fantasy Forest</button>
+          <button onclick="setPrompt('Cute 3D robot character holding a coffee cup, studio lighting, pixar style')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">3D Robot</button>
+        </div>
+      </div>
+
+      <div id="img-loading" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center text-slate-300 text-sm">
+        ⏳ පින්තූරය නිර්මාණය වෙමින් පවතී... කරුණාකර තත්පර කිහිපයක් රැඳී සිටින්න.
+      </div>
+
+      <div id="img-result" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <img id="generated-img" src="" alt="Generated AI Image" class="w-full max-h-[540px] object-contain rounded-xl bg-slate-950 mb-4" />
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p id="img-caption" class="text-xs text-slate-400 truncate max-w-xl"></p>
+          <a id="download-img-btn" href="#" download="nipun-ai-image.jpg" target="_blank" rel="noopener noreferrer"
+            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-sm font-medium transition">
+            ⬇ Download Image
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. AI VIDEO STUDIO -->
+    <section id="tab-video" class="tab-panel hidden max-w-4xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold mb-1">AI Video Studio</h2>
+      <p class="text-sm text-slate-400 mb-6">Text Prompts සහ Scene Settings සකස් කර AI Video Generation Workflow එක සූදානම් කරන්න.</p>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-2">Video Scene Prompt</label>
+          <textarea id="vid-prompt" rows="4"
+            placeholder="උදා: Drone shot flying over misty green tea hills at sunrise, cinematic lighting, smooth camera movement..."
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1.5">Style</label>
+            <select id="vid-style" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm">
+              <option>Cinematic</option>
+              <option>3D Animation</option>
+              <option>Sci-Fi / Cyberpunk</option>
+              <option>Commercial / Product</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1.5">Duration</label>
+            <select id="vid-duration" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm">
+              <option>5 Seconds</option>
+              <option>10 Seconds</option>
+              <option>15 Seconds</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1.5">Aspect Ratio</label>
+            <select id="vid-ratio" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm">
+              <option>16:9 (YouTube / Landscape)</option>
+              <option>9:16 (TikTok / Reels / Shorts)</option>
+              <option>1:1 (Social Post)</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="previewVideoBrief()"
+          class="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl font-semibold text-sm transition">
+          🎬 Prepare Video Render Brief
+        </button>
+
+        <div id="vid-output" class="hidden mt-4 p-4 rounded-xl bg-slate-950 border border-indigo-500/30 text-sm space-y-2">
+          <div class="text-indigo-300 font-semibold">Video Generation Brief Ready</div>
+          <p id="vid-summary" class="text-slate-300 text-xs leading-relaxed"></p>
+          <p class="text-[11px] text-slate-400">
+            සජීවී Video Render කිරීමට Runway, Luma, Kling හෝ Replicate API Endpoint එකක් Backend/Serverless Function එකකට සම්බන්ධ කරන්න.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 50 AI TOOLS DIRECTORY -->
+    <section id="tab-tools" class="tab-panel hidden max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold">50 AI Tools Directory</h2>
+          <p class="text-sm text-slate-400">Writing, Image, Video, Audio, Coding, Marketing සහ Productivity සඳහා AI Tools 50ක්</p>
+        </div>
+        <div class="w-full md:w-80">
+          <input id="tool-search" type="text" oninput="renderTools()"
+            placeholder="Tool නම හෝ Category සොයන්න..."
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div id="category-filters" class="flex flex-wrap gap-2 mb-6"></div>
+
+      <!-- Tools Count -->
+      <div id="tools-count" class="text-xs text-slate-400 mb-4"></div>
+
+      <!-- Tools Grid -->
+      <div id="tools-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+  </main>
+
+  <script>
+    // ---------- TAB NAVIGATION ----------
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.tab === tabName) {
+          btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition bg-indigo-600 text-white shadow-md shadow-indigo-600/20';
+        } else {
+          btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium transition text-slate-300 hover:bg-slate-800';
+        }
+      });
+    }
+
+    // ---------- NIPUN AI CHAT (GEMINI API + DEMO FALLBACK) ----------
+    const apiKeyInput = document.getElementById('gemini-api-key');
+    const savedKey = localStorage.getItem('nipun_gemini_key') || '';
+    if (savedKey) apiKeyInput.value = savedKey;
+    updateApiBadge();
+
+    function saveApiKey() {
+      const key = apiKeyInput.value.trim();
+      if (key) {
+        localStorage.setItem('nipun_gemini_key', key);
+      } else {
+        localStorage.removeItem('nipun_gemini_key');
+      }
+      updateApiBadge();
+      appendMessage('ai', key ? 'Gemini API Key එක Save කරන ලදී. දැන් සජීවී පිළිතුරු ලැබේ!' : 'API Key එක ඉවත් කර Demo Mode ක්‍රියාත්මක කරන ලදී.');
+    }
+
+    function updateApiBadge() {
+      const badge = document.getElementById('api-status-badge');
+      const hasKey = Boolean(localStorage.getItem('nipun_gemini_key'));
+      if (hasKey) {
+        badge.textContent = 'Live API Key';
+        badge.className = 'px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-medium';
+      } else {
+        badge.textContent = 'Demo Mode';
+        badge.className = 'px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium';
+      }
+    }
+
+    function appendMessage(role, text) {
+      const box = document.getElementById('chat-messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+
+      const bubble = document.createElement('div');
+      bubble.className = role === 'user'
+        ? 'max-w-[82%] bg-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm text-sm leading-relaxed whitespace-pre-wrap'
+        : 'max-w-[82%] bg-slate-800 text-slate-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed whitespace-pre-wrap';
+      bubble.textContent = text;
+
+      wrapper.appendChild(bubble);
+      box.appendChild(wrapper);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearChat() {
+      const box = document.getElementById('chat-messages');
+      box.innerHTML = '';
+      appendMessage('ai', 'Chat එක Clear කළා. අලුත් ප්‍රශ්නයක් අහන්න!');
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const typing = document.getElementById('chat-typing');
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      appendMessage('user', prompt);
+      input.value = '';
+      typing.classList.remove('hidden');
+
+      const apiKey = localStorage.getItem('nipun_gemini_key') || '';
+
+      if (!apiKey) {
+        setTimeout(() => {
+          typing.classList.add('hidden');
+          appendMessage(
+            'ai',
+            `Demo Mode පිළිතුර:\nඔයා "${prompt}" ගැන ඇසුවා.\n\nසජීවී Gemini පිළිතුරු ලබාගන්න Google AI Studio වෙතින් API Key එකක් ලබාගෙන ඉහළ ඇති Gemini API Key කොටුවේ Save කරන්න.`
+          );
+        }, 650);
+        return;
+      }
+
+      try {
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        const data = await response.json();
+        typing.classList.add('hidden');
+
+        if (!response.ok) {
+          appendMessage('ai', `API දෝෂයක්: ${data.error?.message || 'API Key එක පරීක්ෂා කරන්න.'}`);
+          return;
+        }
+
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'පිළිතුරක් ලබාගත නොහැකි විය.';
+        appendMessage('ai', reply);
+      } catch (err) {
+        typing.classList.add('hidden');
+        appendMessage('ai', 'Network දෝෂයක් ඇති වුණා. Internet සම්බන්ධතාවය පරීක්ෂා කරන්න.');
+      }
+    }
+
+    // ---------- AI IMAGE STUDIO ----------
+    function setPrompt(text) {
+      document.getElementById('img-prompt').value = text;
+    }
+
+    function generateImage() {
+      const promptInput = document.getElementById('img-prompt');
+      const sizeSelect = document.getElementById('img-size');
+      const loading = document.getElementById('img-loading');
+      const result = document.getElementById('img-result');
+      const imgEl = document.getElementById('generated-img');
+      const captionEl = document.getElementById('img-caption');
+      const downloadBtn = document.getElementById('download-img-btn');
+
+      const prompt = promptInput.value.trim();
+      if (!prompt) {
+        promptInput.focus();
+        return;
+      }
+
+      const [width, height] = sizeSelect.value.split('x');
+      const seed = Math.floor(Math.random() * 1000000);
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+
+      result.classList.add('hidden');
+      loading.classList.remove('hidden');
+
+      imgEl.onload = () => {
+        loading.classList.add('hidden');
+        result.classList.remove('hidden');
+        captionEl.textContent = `Prompt: ${prompt} (${sizeSelect.value})`;
+        downloadBtn.href = url;
+      };
+
+      imgEl.onerror = () => {
+        loading.classList.add('hidden');
+        alert('පින්තූරය Load කිරීමේදී ගැටලුවක් ඇති වුණා. නැවත උත්සාහ කරන්න.');
+      };
+
+      imgEl.src = url;
+    }
+
+    // ---------- AI VIDEO STUDIO ----------
+    function previewVideoBrief() {
+      const prompt = document.getElementById('vid-prompt').value.trim();
+      if (!prompt) {
+        document.getElementById('vid-prompt').focus();
+        return;
+      }
+      const style = document.getElementById('vid-style').value;
+      const duration = document.getElementById('vid-duration').value;
+      const ratio = document.getElementById('vid-ratio').value;
+
+      document.getElementById('vid-summary').textContent =
+        `Prompt: "${prompt}" | Style: ${style} | Duration: ${duration} | Ratio: ${ratio}`;
+      document.getElementById('vid-outp
